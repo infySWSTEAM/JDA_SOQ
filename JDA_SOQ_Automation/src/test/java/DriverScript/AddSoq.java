@@ -52,6 +52,7 @@ public class AddSoq extends DififoReportSetup{
 	String query;
 	XSSFWorkbook workbook  = null;
 	String orderId;
+	String item;
 	
 	public void Screenshot(String Filename) throws IOException
 	{
@@ -137,9 +138,8 @@ public class AddSoq extends DififoReportSetup{
 		Screenshot("Displaying Existing Search results");
 		AddSOQ(i);
 		Thread.sleep(5000);
-	    driver.switchTo().defaultContent();
 	    report.log("Refreshing the search again");
-		driver.switchTo().frame("appFrame");
+		Thread.sleep(5000);
 		ASO.clickgo();
 		Thread.sleep(5000);
 		sop.clickdone();
@@ -158,13 +158,12 @@ public class AddSoq extends DififoReportSetup{
 		Thread.sleep(8000);
 		Screenshot("Navigating to Order Details tab");
 		od.RecalcOrder();
-		Thread.sleep(3000);
+		Thread.sleep(5000);
 		report.log("Recalculate orders");
-		Screenshot("Recalculate orders success");
+		Screenshot("Recalculate orders Dialog box");
 		driver.switchTo().frame("OrderOptRecalcOrderIframe");
 		reCalculateOrder(i);
 		Thread.sleep(8000);
-		driver.switchTo().frame("appFrame");
 		report.log("Navigating to Order Notes");
 		od.OrderNotes();
 		Screenshot("User is at Order Notes");
@@ -205,13 +204,12 @@ public class AddSoq extends DififoReportSetup{
 			driver.switchTo().frame("appFrame");
 			RCO.ClickDone();
 			report.log("Done Clicked. Order Re-calculating");
-			driver.switchTo().defaultContent();
-			Thread.sleep(30000);
+			Thread.sleep(50000);
 			zoomOut();
 			Thread.sleep(5000);
 			Screenshot("Order Re-calculated");
 			zoomRelease();
-			Thread.sleep(5000);
+			Thread.sleep(15000);
 			orderId(i);
 	}
 
@@ -365,11 +363,18 @@ public class AddSoq extends DififoReportSetup{
                     workbook.write(fileOut);
     }
 	
-	public String fetchItemNumber(String filePa, String fileNa,String SheetNa,int row,int col) throws IOException
+	public String fetchOrderNumber(String filePa, String fileNa,String SheetNa,int row,int col) throws IOException
 	{
     	orderId = exf.readExcel(filePa, fileNa, SheetNa, row, 19);
     	return orderId;
 	}
+	
+	public String fetchItemNumber(String filePa, String fileNa,String SheetNa,int row,int col) throws IOException
+	{
+    	item = exf.readExcel(filePa, fileNa, SheetNa, row, 2);
+    	return item;
+	}
+	
 	public void dbQuery(int i) throws IOException, SQLException
 	{
 		InputStream envPropInput = new FileInputStream("./Environment\\Environment.properties");
@@ -378,14 +383,14 @@ public class AddSoq extends DififoReportSetup{
 		testScenarioFilePath = envProp.getProperty("testScenarioFilePath");
 		testCaseFileName = envProp.getProperty("testCaseFileName");
 		testdatasheet = envProp.getProperty("testdatasheet");
-		String orderid = fetchItemNumber(testScenarioFilePath,testCaseFileName,testdatasheet,i,19);
+		String orderid = fetchOrderNumber(testScenarioFilePath,testCaseFileName,testdatasheet,i,19);
+		String item = fetchItemNumber(testScenarioFilePath,testCaseFileName,testdatasheet,i,2);
 		DataBase db= new DataBase();
 		InputStream queryPropInput = new FileInputStream("./DB Query\\Query1.properties");
 		Properties queryProp = new Properties();
 		queryProp.load(queryPropInput);
 		String Query = queryProp.getProperty("VEHICLELOADLINE");
-		db.vehicleLoadLine(Query + orderid +"'",i);
-	
+		db.vehicleLoadLine(Query + orderid +"' and item='"+ item + "'",i);
 	}
 	
 	

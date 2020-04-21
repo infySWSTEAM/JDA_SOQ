@@ -53,7 +53,7 @@ By holdOutRelease =By.xpath("//*[@name='SUPPORDERSKU_HOLDOUTRELEASESTART']");
 By Done = By.xpath("//*[@id='null_ButtonDiv']//span[text()='Done']");
 By grptype = By.xpath("//*[@name='SUPPORDERSKU_GROUPTYPE']");
 By status =By.xpath("//*[@name='SUPPORDERSKU_STATUS']");
-By go = By.xpath("//*[@id='searchGoBtn']/img");
+By go = By.xpath("//a[@id='searchGoBtn']/img");
 By suppId = By.xpath("//*[@name='SUPPORDERSKU_SUPPORDERID']");
 
 
